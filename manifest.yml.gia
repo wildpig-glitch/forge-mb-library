@@ -1,0 +1,42 @@
+modules:
+  action:
+    - key: filter-tickets
+      name: Get Tickets with Filtered Children
+      description: Retrieves Jira tickets whose children are filtered by specified attribute values
+      function: filterTicketsFunction
+      actionVerb: GET
+      inputs:
+        jqlQuery:
+          name: JQL Query
+          description: JQL query that defines the initial list of Jira tickets to be filtered
+          type: string
+          required: true
+        attributes:
+          name: Attribute Filters
+          description: List of attribute conditions to filter children by (e.g., ["status != Done", "priority = High"])
+          type: array
+          required: true
+  rovo:agent:
+    - key: forge-mb-library
+      name: forge-mb-library
+      description: A simple library of functions meant to be called from customer defined agents.
+      prompt: This agent provides utility functions for Jira ticket management and filtering.
+      conversationStarters:
+        - "Help me filter Jira tickets by their children's attributes"
+      actions:
+        - filter-tickets
+      
+  function:
+    - key: filterTicketsFunction
+      handler: index.getTicketsWithFilteredChildren
+app:
+  runtime:
+    name: nodejs22.x
+    memoryMB: 256
+    architecture: arm64
+  id: ari:cloud:ecosystem::app/98aa09f4-072a-4f48-bddf-458926e8b854
+permissions:
+  scopes:
+    - write:jira-work
+    - read:jira-work
+    - read:chat:rovo
